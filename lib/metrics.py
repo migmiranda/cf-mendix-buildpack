@@ -35,10 +35,40 @@ class MetricsEmitterThread(threading.Thread):
             if buildpackutil.i_am_primary_instance():
                 stats = self._inject_storage_stats(stats)
                 stats = self._inject_database_stats(stats)
+                stats = self._inject_health(stats)
 
             logger.info('MENDIX-METRICS: ' + json.dumps(stats))
 
             time.sleep(self.interval)
+
+    def _inject_health(self, stats):
+        health = {}
+        translation = {'healthy': 1.0,
+                       'sick': 0.7,
+                       'critical': 0.3,
+                       'unknown': 0.0}
+        stats['health'] = stats
+
+        try:
+            feedback = self.m2ee.client.check_health()
+            health['health'] = translation[feedback['health']]
+            health['diagnosis'] = feedback['diagnosis'] if 'diagnosis' in feedback else ''
+        except M2EEAdminException as e:
+            if e.result in (e.ERR_ACTION_NOT_FOUND, client_errno.check_health_INVALID_STATE):
+                health['health'] = translation['unknown']
+                health['diagnosis'] = "Health check not available, health could not be determined"
+            else:
+                health['health'] = translation['critical']
+                health['diagnosis'] = "Health check failed unexpectedly: %s" % e
+        except M2EEAdminNotAvailable as e:
+            health['health'] = translation['unknown']
+            health['diagnosis'] = "Admin API not available, health could not be determined"
+        except Exception as e:
+            logger.warn('Metrics: Failed to get health status, ' + str(e))
+            health['health'] = translation['critical']
+            health['diagnosis'] = "Health check failed unexpectedly: %s" % e
+
+        return stats
 
     def _inject_m2ee_stats(self, stats):
         try:
