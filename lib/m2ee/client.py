@@ -8,6 +8,7 @@
 from base64 import b64encode
 import socket
 from log import logger
+from httplib import BadStatusLine
 
 try:
     import httplib2
@@ -66,6 +67,11 @@ class M2EEClient:
             logger.trace("Got %s: %s" % (type(e), e))
         except (socket.error, socket.timeout), e:
             logger.trace("Got %s: %s" % (type(e), e))
+            logger.error("Got %s: %s" % (type(e), e))
+            import traceback
+            logger.error(traceback.format_exc())
+        except BadStatusLine:
+            print "could not fetch %s" % url
         except Exception, e:
             logger.error("Got %s: %s" % (type(e), e))
             import traceback
