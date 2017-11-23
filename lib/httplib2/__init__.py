@@ -923,7 +923,7 @@ class HTTPSConnectionWithTimeout(httplib.HTTPSConnection):
     """
     def __init__(self, host, port=None, key_file=None, cert_file=None,
                  strict=None, timeout=None, proxy_info=None,
-                 ca_certs=None, disable_ssl_certificate_validation=False):
+                 ca_certs=None, disable_ssl_certificate_validation=True):
         httplib.HTTPSConnection.__init__(self, host, port=port,
                                          key_file=key_file,
                                          cert_file=cert_file, strict=strict)
@@ -1099,7 +1099,7 @@ try:
         """
         def __init__(self, host, port=None, key_file=None, cert_file=None,
                      strict=None, timeout=None, proxy_info=None, ca_certs=None,
-                     disable_ssl_certificate_validation=False):
+                     disable_ssl_certificate_validation=True):
             httplib.HTTPConnection.__init__(self, host, port=port,
                                             strict=strict, timeout=timeout)
 
@@ -1107,7 +1107,7 @@ try:
         """Same as AppEngineHttpConnection, but for HTTPS URIs."""
         def __init__(self, host, port=None, key_file=None, cert_file=None,
                      strict=None, timeout=None, proxy_info=None, ca_certs=None,
-                     disable_ssl_certificate_validation=False):
+                     disable_ssl_certificate_validation=True):
             httplib.HTTPSConnection.__init__(self, host, port=port,
                                              key_file=key_file,
                                              cert_file=cert_file, strict=strict,
@@ -1140,7 +1140,7 @@ class Http(object):
     """
     def __init__(self, cache=None, timeout=None,
                  proxy_info=proxy_info_from_environment,
-                 ca_certs=None, disable_ssl_certificate_validation=False):
+                 ca_certs=None, disable_ssl_certificate_validation=True):
         """If 'cache' is a string then it is used as a directory name for
         a disk cache. Otherwise it must be an object that supports the
         same interface as FileCache.
