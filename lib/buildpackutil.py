@@ -193,7 +193,7 @@ def download(url, destination):
         url=url, destination=destination
     ))
     with open(destination, 'w') as file_handle:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, validate=False)
         if not response.ok:
             response.raise_for_status()
         for block in response.iter_content(4096):
